@@ -3,75 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PrintFlow Pro — Batch Document Printing Suite</title>
-
-  <!-- Tailwind CSS -->
+  <title>PrintFlow Pro — Batch Printing Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Google Fonts: Inter & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- PDF.js for first-page PDF thumbnail generation & high-res printing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          }
-        }
-      }
-    };
-  </script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f4f6fb;
       color: #0f172a;
     }
 
-    /* Refined subtle scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-
-    /* Active printer pulse dot */
-    @keyframes statusPulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.45; }
-    }
-    .pulse-dot {
-      animation: statusPulse 2.2s infinite ease-in-out;
-    }
-
-    /* Drag & drop highlight */
-    .dropzone-active {
-      border-color: #4f46e5 !important;
-      background-color: #eef2ff !important;
-      transform: scale(1.004);
-    }
-
-    /* Print isolation stage */
     @media print {
       body * {
         visibility: hidden !important;
@@ -100,13 +42,22 @@
         max-height: 100vh !important;
         object-fit: contain !important;
         page-break-after: always;
-        break-after: page;
       }
-      #print-stage img:last-child,
-      #print-stage canvas:last-child {
-        page-break-after: auto;
-        break-after: auto;
-      }
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
     }
   </style>
 </head>
@@ -115,677 +66,743 @@
   <!-- Hidden Print Stage -->
   <div id="print-stage" class="hidden"></div>
 
-  <!-- Toast Notification Stack -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none"></div>
-
-  <!-- ========================================================= -->
-  <!-- TOP NAVIGATION & WORKSPACE CONTROLS                       -->
-  <!-- ========================================================= -->
-  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-2xs">
+  <!-- Premium Top Header Bar -->
+  <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-xs">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-
       <!-- Brand Identity -->
       <div class="flex items-center gap-3 shrink-0">
-        <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-xs">
-          <i data-lucide="printer" class="w-4.5 h-4.5"></i>
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-base font-bold tracking-tight text-slate-900">PrintFlow <span class="text-indigo-600">Pro</span></h1>
-            <span class="hidden xl:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-              STUDIO
-            </span>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 leading-none">PrintFlow</h1>
+            <span class="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200/70">Pro</span>
           </div>
-          <p class="text-[11px] text-slate-500 hidden sm:block leading-none mt-0.5">Batch Print &amp; Version Spooler</p>
+          <p class="text-[11px] text-slate-500 font-medium mt-0.5 hidden sm:block">Enterprise Batch Print Studio</p>
         </div>
       </div>
 
       <!-- Center Screen Switcher -->
-      <nav class="hidden lg:flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80">
-        <button id="navStep1Btn" onclick="switchScreen(1)" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-700 shadow-2xs cursor-pointer">
-          <span class="w-4.5 h-4.5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold">1</span>
-          <span>Upload Batch (<span id="navBatchCount">0</span>/200)</span>
+      <div class="hidden lg:flex items-center bg-slate-100/90 p-1 rounded-2xl border border-slate-200/80">
+        <button id="nav-screen-1" onclick="switchScreen(1)" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs cursor-pointer">
+          1. Upload Batch (<span id="nav-count-badge">0</span>/200)
         </button>
-        <button id="navStep2Btn" onclick="switchScreen(2)" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
-          <span id="navStep2Badge" class="w-4.5 h-4.5 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-[10px] font-bold">2</span>
-          <span>Print Workspace</span>
+        <button id="nav-screen-2" onclick="switchScreen(2)" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
+          2. Print Workspace &amp; Queue
         </button>
-      </nav>
+      </div>
 
-      <!-- Right Action Controls: Save/Load Versions, Clear All, Connect Printer -->
-      <div class="flex items-center gap-2">
-
-        <!-- Save Current Version -->
-        <button onclick="openSaveModal()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-indigo-300 text-xs font-semibold text-slate-700 transition-all cursor-pointer" title="Save current batch & print status">
-          <i data-lucide="save" class="w-3.5 h-3.5 text-indigo-600"></i>
+      <!-- Right Action Controls: Save Version, Load Versions, Clear All, Connect Printer -->
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <!-- Save Version -->
+        <button onclick="openSaveVersionModal()" title="Save current session to local storage" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/80 transition cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+          </svg>
           <span class="hidden sm:inline">Save Session</span>
         </button>
 
-        <!-- Load Saved Versions -->
-        <button onclick="openLoadModal()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-indigo-300 text-xs font-semibold text-slate-700 transition-all cursor-pointer" title="Open saved versions">
-          <i data-lucide="folder-clock" class="w-3.5 h-3.5 text-slate-600"></i>
-          <span class="hidden sm:inline">Saved Versions</span>
-          <span id="savedVersionsBadge" class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">0</span>
+        <!-- Saved Versions Drawer Button -->
+        <button onclick="openVersionsModal()" title="Open saved versions from local storage" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 shadow-2xs transition cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="hidden md:inline">Saved Versions</span>
+          <span id="saved-versions-badge" class="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-700">0</span>
         </button>
 
-        <!-- Global Clear All -->
-        <button onclick="confirmClearAll()" id="globalClearBtn" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-xs font-semibold text-rose-600 transition-all cursor-pointer" title="Remove all uploaded and printed documents">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-          <span class="hidden md:inline">Clear All</span>
+        <!-- Clear All Button -->
+        <button onclick="confirmClearAll()" title="Clear and remove all documents" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200/80 transition cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <span class="hidden sm:inline">Clear All</span>
         </button>
 
-        <div class="h-5 w-px bg-slate-200 hidden sm:block mx-0.5"></div>
+        <div class="h-5 w-px bg-slate-200 hidden sm:block"></div>
 
-        <!-- Connect Printer Trigger -->
-        <button onclick="openPrinterModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-2xs cursor-pointer">
-          <span class="relative flex h-2 w-2 shrink-0">
-            <span id="printerStatusPing" class="pulse-dot absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-            <span id="printerStatusDot" class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
-          </span>
-          <div class="text-left min-w-0">
-            <div id="printerStatusLabel" class="text-[10px] text-slate-300 leading-none">Connect Printer</div>
-            <div id="activePrinterName" class="text-xs font-semibold text-white truncate max-w-[110px] sm:max-w-[155px] mt-0.5">
-              System Default
-            </div>
-          </div>
+        <!-- Printer Status & Connect Button -->
+        <div id="printer-status-pill" class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
+          <span id="printer-status-dot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span id="printer-status-text" class="max-w-[150px] truncate">No Printer Connected</span>
+        </div>
+
+        <button onclick="openPrinterModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99] transition shadow-xs cursor-pointer">
+          <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <span>Connect Printer</span>
         </button>
       </div>
     </div>
 
-    <!-- Mobile Screen Switcher -->
-    <div class="lg:hidden border-t border-slate-100 px-4 py-2 bg-slate-50 flex gap-2">
-      <button id="mobStep1Btn" onclick="switchScreen(1)" class="flex-1 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">
-        1. Upload (<span id="mobBatchCount">0</span>/200)
+    <!-- Mobile / Tablet Screen Switcher -->
+    <div class="lg:hidden border-t border-slate-100 px-4 py-2 bg-slate-50/90 flex gap-2">
+      <button id="mob-nav-1" onclick="switchScreen(1)" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-2xs">
+        1. Upload (<span id="mob-count-badge">0</span>/200)
       </button>
-      <button id="mobStep2Btn" onclick="switchScreen(2)" class="flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-700 border border-slate-200">
+      <button id="mob-nav-2" onclick="switchScreen(2)" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200">
         2. Print Workspace
       </button>
     </div>
   </header>
 
-  <!-- ========================================================= -->
-  <!-- MAIN WORKSPACE CONTAINER                                  -->
-  <!-- ========================================================= -->
+  <!-- Global Notification Toast -->
+  <div id="global-toast" class="fixed bottom-16 right-5 z-50 hidden transform transition-all duration-300">
+    <div id="global-toast-inner" class="px-4 py-3 rounded-2xl shadow-lg border text-xs font-bold flex items-center gap-2.5 bg-slate-900 text-white border-slate-700">
+      <span id="global-toast-msg"></span>
+    </div>
+  </div>
+
+  <!-- Main Application Workspace -->
   <main class="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- ======================================================= -->
-    <!-- SCREEN 1: BULK UPLOAD (MAX 200 DOCUMENTS)               -->
-    <!-- ======================================================= -->
-    <section id="screen1" class="max-w-5xl mx-auto space-y-6">
-      <div class="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-2xs">
-
-        <!-- Header & Capacity Meter -->
+    <!-- SCREEN 1: UPLOAD DOCUMENTS (MAX 200) -->
+    <section id="screen-1" class="space-y-6">
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
           <div>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 mb-2">
-              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
-              Step 1 — Batch Intake (Up to 200 Files)
-            </span>
-            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Upload Documents for Printing</h2>
-            <p class="text-sm text-slate-500 mt-1">
-              Drop or select up to <strong class="text-slate-700">200 documents</strong> in PDF, PNG, JPG, JPEG, WEBP, GIF, BMP, TIFF, SVG, or any format.
-            </p>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold mb-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+              Step 1 &bull; Batch Document Staging
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Upload Batch Documents</h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">Select up to <span class="font-bold text-slate-700">200 documents</span> in PDF, PNG, JPG, JPEG, WEBP, or any image/document format. Each document receives a permanent, non-repeating Serial Number.</p>
           </div>
 
-          <div class="bg-slate-50 border border-slate-200/90 rounded-xl p-3.5 min-w-[230px]">
-            <div class="flex items-center justify-between text-xs font-semibold mb-1.5">
-              <span class="text-slate-600">Batch Capacity</span>
-              <span id="capacityCounterText" class="font-mono text-indigo-600 font-bold">0 / 200</span>
+          <div class="flex items-center gap-4 bg-slate-50 px-4 py-3 rounded-2xl border border-slate-200/70 shrink-0">
+            <div>
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Batch Capacity</div>
+              <div class="text-lg font-extrabold text-slate-900 mt-0.5"><span id="upload-counter" class="text-indigo-600">0</span> <span class="text-slate-400 font-semibold text-sm">/ 200</span></div>
             </div>
-            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-              <div id="capacityProgressBar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
-            </div>
-            <div class="flex items-center justify-between text-[11px] text-slate-400 mt-1.5">
-              <span id="totalSizeText">0 KB</span>
-              <span id="remainingSlotsText">200 slots available</span>
+            <div class="w-24 h-2.5 bg-slate-200/80 rounded-full overflow-hidden">
+              <div id="capacity-bar" class="h-full bg-gradient-to-r from-indigo-600 to-violet-600 transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
         </div>
 
         <!-- Drag & Drop Zone -->
-        <div id="dropZone" class="mt-6 border-2 border-dashed border-slate-300 hover:border-indigo-500 bg-slate-50/60 hover:bg-indigo-50/30 rounded-2xl p-10 sm:p-14 text-center transition-all cursor-pointer group">
-          <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.svg,.tif,.tiff,.doc,.docx,.txt,image/*,application/pdf" class="hidden" />
-
-          <div class="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center justify-center mx-auto mb-4 group-hover:scale-105 group-hover:border-indigo-200 transition-transform">
-            <i data-lucide="upload-cloud" class="w-8 h-8 text-indigo-600"></i>
+        <div id="drop-zone" onclick="document.getElementById('file-input').click()" class="mt-6 border-2 border-dashed border-slate-300 hover:border-indigo-500 bg-gradient-to-b from-slate-50/70 to-indigo-50/20 hover:from-indigo-50/40 hover:to-violet-50/30 rounded-3xl p-8 sm:p-14 text-center cursor-pointer transition-all group">
+          <input id="file-input" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.svg,.tif,.tiff,.doc,.docx,.txt,image/*,application/pdf" class="hidden" onchange="handleFilesSelected(this.files)" />
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-white border border-indigo-100 text-indigo-600 shadow-sm flex items-center justify-center group-hover:scale-105 group-hover:shadow-md transition-all">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
           </div>
-
-          <h3 class="text-base sm:text-lg font-bold text-slate-900">
-            Drag &amp; drop files here, or <span class="text-indigo-600 underline decoration-indigo-300 underline-offset-4">browse device</span>
-          </h3>
-          <p class="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-md mx-auto">
-            Automatic photo thumbnails generated for every PDF and image file.
-          </p>
-
-          <div class="mt-5 flex flex-wrap items-center justify-center gap-1.5">
-            <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-slate-600">PDF</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-slate-600">PNG</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-slate-600">JPG / JPEG</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-slate-600">WEBP</span>
-            <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-semibold text-slate-600">TIFF / BMP / SVG</span>
+          <h3 class="mt-4 text-base sm:text-lg font-extrabold text-slate-900">Click to select files or drag &amp; drop documents here</h3>
+          <p class="mt-1 text-xs sm:text-sm text-slate-500">Supports PDF, PNG, JPG, JPEG, WEBP, GIF, BMP, TIFF &amp; all formats (Max 200 files)</p>
+          <div class="mt-5 inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-indigo-600 text-white text-xs sm:text-sm font-bold shadow-sm shadow-indigo-500/20 group-hover:bg-indigo-700 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Select Documents from Device
           </div>
         </div>
 
-        <!-- Staged Preview Strip -->
-        <div id="stagingSection" class="hidden mt-7 pt-6 border-t border-slate-200/80">
-          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <!-- Staging Strip -->
+        <div id="staging-area" class="hidden mt-8 pt-6 border-t border-slate-100 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2">
-              <h4 class="text-sm font-bold text-slate-800">Uploaded Documents</h4>
-              <span id="stagedBadgeCount" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700">0</span>
+              <h4 class="text-sm font-extrabold text-slate-900">Staged Documents (<span id="staging-count">0</span>)</h4>
+              <span class="text-xs text-slate-400">&bull; Ready for direct print workspace</span>
             </div>
-            <div class="flex items-center gap-2">
-              <button onclick="triggerFilePicker()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add More
+            <div class="flex items-center gap-2.5">
+              <button onclick="confirmClearAll()" class="px-4 py-2 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition cursor-pointer">
+                Clear All
               </button>
-              <button onclick="confirmClearAll()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer">
-                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear All
-              </button>
-              <button onclick="switchScreen(2)" class="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+              <button onclick="switchScreen(2)" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm shadow-emerald-500/20 transition cursor-pointer">
                 <span>Open Print Workspace</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </button>
             </div>
           </div>
 
-          <div id="stagedFilesGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 max-h-[320px] overflow-y-auto pr-1"></div>
+          <div id="staging-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 max-h-[360px] overflow-y-auto p-1 custom-scrollbar"></div>
         </div>
       </div>
     </section>
 
-    <!-- ======================================================= -->
-    <!-- SCREEN 2: SPLIT-PANE PRINT WORKSPACE                    -->
-    <!-- Left: Pending Queue Table | Top-Right: Already Printed  -->
-    <!-- ======================================================= -->
-    <section id="screen2" class="hidden space-y-5">
+    <!-- SCREEN 2: ASYMMETRIC SPLIT WORKSPACE (LEFT: PENDING TABLE | TOP-RIGHT: ALREADY PRINTED WITH HIDE/SHOW TOGGLE) -->
+    <section id="screen-2" class="hidden space-y-5">
 
-      <!-- Workspace Top Action & KPI Strip -->
-      <div class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div class="flex flex-wrap items-center gap-3">
-          <button onclick="switchScreen(1)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition cursor-pointer">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            Add Documents
-          </button>
-
-          <!-- Search Input -->
-          <div class="relative">
-            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-            <input type="text" id="searchInput" oninput="renderWorkspace()" placeholder="Search document name..." class="pl-8 pr-3 py-2 rounded-xl border border-slate-200 text-xs w-52 sm:w-64 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+      <!-- Top Compact Metrics & Action Strip -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        <!-- Metrics Pills -->
+        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+          <div class="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center gap-2.5">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total</span>
+            <span id="stat-total" class="text-base font-extrabold text-slate-900">0</span>
           </div>
-
-          <!-- Compact Live Counters -->
-          <div class="hidden xl:flex items-center gap-2 pl-2 border-l border-slate-200 text-xs">
-            <span class="px-2.5 py-1 rounded-lg bg-slate-100 font-semibold text-slate-700">Total: <strong id="kpiTotalDocs" class="font-mono">0</strong></span>
-            <span class="px-2.5 py-1 rounded-lg bg-amber-50 font-semibold text-amber-700 border border-amber-200/70">Pending: <strong id="kpiPendingDocs" class="font-mono">0</strong></span>
-            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 font-semibold text-emerald-700 border border-emerald-200/70">Printed: <strong id="kpiPrintedDocs" class="font-mono">0</strong></span>
+          <div class="px-3.5 py-2 rounded-xl bg-amber-50/70 border border-amber-200/70 flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Pending</span>
+            <span id="stat-pending" class="text-base font-extrabold text-amber-800">0</span>
+          </div>
+          <div class="px-3.5 py-2 rounded-xl bg-emerald-50/70 border border-emerald-200/70 flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Already Printed</span>
+            <span id="stat-printed" class="text-base font-extrabold text-emerald-800">0</span>
+          </div>
+          <div class="px-3.5 py-2 rounded-xl bg-indigo-50/60 border border-indigo-200/70 flex items-center gap-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-500">Next Serial #</span>
+            <span id="stat-next-serial" class="text-sm font-extrabold text-indigo-800">1</span>
+          </div>
+          <div class="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center gap-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Printer</span>
+            <span id="stat-printer" class="text-xs font-bold text-slate-800 truncate max-w-[140px]">System Default</span>
           </div>
         </div>
 
+        <!-- Workspace Quick Controls -->
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick="openSaveModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition cursor-pointer">
-            <i data-lucide="save" class="w-3.5 h-3.5 text-indigo-600"></i>
-            Save Version
+          <button onclick="switchScreen(1)" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Files
           </button>
 
-          <button onclick="confirmClearAll()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50/80 hover:bg-rose-100 text-xs font-semibold text-rose-600 transition cursor-pointer">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            Clear All
-          </button>
+          <div class="relative">
+            <input id="search-input" type="text" oninput="renderQueueTables()" placeholder="Search serial # or name..." class="pl-8 pr-3 py-2 rounded-xl text-xs font-medium border border-slate-200 focus:outline-none focus:border-indigo-500 w-44 sm:w-52 bg-slate-50/60 focus:bg-white transition" />
+            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
 
-          <button onclick="printAllPending()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition cursor-pointer">
-            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+          <button onclick="printAllPending()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
             Print All Pending
+          </button>
+
+          <button id="show-printed-panel-btn" onclick="togglePrintedSection(true)" class="hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            Show Printed (<span id="show-printed-count">0</span>)
+          </button>
+
+          <button onclick="confirmClearAll()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer">
+            Clear All
           </button>
         </div>
       </div>
 
-      <!-- ASYMMETRIC 12-COLUMN SPLIT-PANE GRID -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- TWO-COLUMN SPLIT: LEFT = TABULAR PRINT QUEUE | TOP-RIGHT = ALREADY PRINTED PANEL -->
+      <div id="workspace-grid" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <!-- =================================================== -->
-        <!-- LEFT COLUMN (8/12): ACTIVE PENDING PRINT QUEUE      -->
-        <!-- =================================================== -->
-        <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
-          <div class="px-5 py-4 border-b border-slate-200/80 bg-slate-50/60 flex items-center justify-between">
+        <!-- LEFT COLUMN: PENDING PRINT QUEUE TABLE -->
+        <div id="pending-column" class="lg:col-span-8 bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden transition-all">
+          <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-              <h3 class="text-sm font-bold text-slate-900">Pending Print Queue</h3>
-              <span id="pendingBadgeCount" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 font-mono">0</span>
+              <h3 class="text-sm sm:text-base font-extrabold text-slate-900">Ready to Print Queue</h3>
+              <span id="pending-section-count" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800">0</span>
             </div>
-            <span class="text-[11px] text-slate-500 hidden sm:inline">Click <strong>Direct Print</strong> to send to printer</span>
+            <span class="text-[11px] font-medium text-slate-400 hidden sm:inline">Permanent Serial No. &bull; Click Direct Print</span>
           </div>
 
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  <th class="py-3 px-4 w-12 text-center">#</th>
-                  <th class="py-3 px-4 w-20">Preview</th>
-                  <th class="py-3 px-4">Document</th>
-                  <th class="py-3 px-4 w-24">Format</th>
-                  <th class="py-3 px-4 w-24 text-center">Copies</th>
-                  <th class="py-3 px-4 w-40 text-right">Command</th>
+                <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                  <th class="py-3.5 px-4 w-20">Serial #</th>
+                  <th class="py-3.5 px-4 w-20">Preview</th>
+                  <th class="py-3.5 px-4">Document Name</th>
+                  <th class="py-3.5 px-4 w-24">Format</th>
+                  <th class="py-3.5 px-4 w-24">Copies</th>
+                  <th class="py-3.5 px-4 w-36 text-right">Print Command</th>
                 </tr>
               </thead>
-              <tbody id="pendingTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
+              <tbody id="pending-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
             </table>
           </div>
 
           <!-- Empty Pending State -->
-          <div id="pendingEmptyState" class="hidden py-16 px-4 text-center">
-            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
-              <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+          <div id="pending-empty-state" class="hidden py-16 px-4 text-center">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-            <h4 class="text-sm font-bold text-slate-800">Pending Queue is Clear</h4>
-            <p class="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-              All queued documents have been printed, or upload new documents to begin.
-            </p>
-            <button onclick="switchScreen(1)" class="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition cursor-pointer">
-              <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload Documents
+            <h3 class="mt-3 text-sm font-extrabold text-slate-800">No pending documents in queue</h3>
+            <p class="mt-1 text-xs text-slate-500">All documents are printed or no files have been uploaded yet.</p>
+            <button onclick="switchScreen(1)" class="mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition cursor-pointer">
+              + Upload Documents
             </button>
           </div>
         </div>
 
-        <!-- =================================================== -->
-        <!-- TOP-RIGHT CORNER COLUMN (4/12): ALREADY PRINTED     -->
-        <!-- Crossed line items + Reprint button ONLY (No Undo)  -->
-        <!-- =================================================== -->
-        <aside class="lg:col-span-4 lg:sticky lg:top-20 bg-white rounded-2xl border border-emerald-200/90 shadow-2xs overflow-hidden">
-          <div class="px-4 py-3.5 border-b border-emerald-200/80 bg-emerald-50/70 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-              <h3 class="text-sm font-bold text-emerald-950">Already Printed</h3>
+        <!-- TOP-RIGHT CORNER: ALREADY PRINTED SECTION (WITH HIDE/SHOW ICON & SECTION OPTIONS) -->
+        <aside id="printed-column" class="lg:col-span-4 lg:sticky lg:top-20 bg-white rounded-3xl border border-emerald-200/90 shadow-xs overflow-hidden transition-all">
+          <div class="px-4 py-3.5 border-b border-emerald-100 bg-gradient-to-r from-emerald-50/90 to-teal-50/70 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span>
+              <h3 class="text-sm font-extrabold text-emerald-950 truncate">Already Printed</h3>
+              <span id="printed-section-count" class="px-2 py-0.5 rounded-full text-xs font-extrabold bg-emerald-200/80 text-emerald-900 shrink-0">0</span>
             </div>
-            <span id="printedBadgeCount" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-200/90 text-emerald-900 font-mono">0</span>
+
+            <!-- Section Options & Hide Icon Button -->
+            <div class="flex items-center gap-1 shrink-0">
+              <div class="relative">
+                <button onclick="togglePrintedOptionsMenu()" title="Section Options" class="p-1.5 rounded-lg text-emerald-800 hover:bg-emerald-200/60 transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                  </svg>
+                </button>
+                <!-- Section Options Dropdown -->
+                <div id="printed-options-menu" class="hidden absolute right-0 mt-1.5 w-48 bg-white rounded-2xl shadow-xl border border-slate-200 py-1.5 z-40 text-xs font-semibold text-slate-700">
+                  <button onclick="sortPrintedBySerial('asc'); togglePrintedOptionsMenu()" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center justify-between cursor-pointer">
+                    <span>Sort by Serial # (Asc)</span>
+                    <span class="text-[10px] text-slate-400">1&rarr;9</span>
+                  </button>
+                  <button onclick="sortPrintedBySerial('desc'); togglePrintedOptionsMenu()" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center justify-between cursor-pointer">
+                    <span>Sort by Serial # (Desc)</span>
+                    <span class="text-[10px] text-slate-400">9&rarr;1</span>
+                  </button>
+                  <div class="my-1 border-t border-slate-100"></div>
+                  <button onclick="clearPrintedOnly(); togglePrintedOptionsMenu()" class="w-full text-left px-3.5 py-2 text-rose-600 hover:bg-rose-50 cursor-pointer">
+                    Remove Printed History
+                  </button>
+                  <button onclick="togglePrintedSection(false); togglePrintedOptionsMenu()" class="w-full text-left px-3.5 py-2 text-slate-600 hover:bg-slate-50 cursor-pointer">
+                    Hide Already Printed Panel
+                  </button>
+                </div>
+              </div>
+
+              <!-- Direct Hide Eye-Off Icon Button -->
+              <button onclick="togglePrintedSection(false)" title="Hide Already Printed Section" class="p-1.5 rounded-lg text-emerald-800 hover:bg-emerald-200/60 transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <div id="printedListContainer" class="divide-y divide-slate-100 max-h-[calc(100vh-230px)] overflow-y-auto"></div>
+          <div id="printed-list-container" class="max-h-[calc(100vh-210px)] overflow-y-auto custom-scrollbar divide-y divide-slate-100"></div>
 
-          <!-- Empty Already Printed State -->
-          <div id="printedEmptyState" class="py-12 px-4 text-center">
-            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto mb-2.5">
-              <i data-lucide="printer-check" class="w-5 h-5"></i>
+          <!-- Empty Printed State -->
+          <div id="printed-empty-state" class="py-12 px-5 text-center">
+            <div class="w-10 h-10 mx-auto rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center mb-2.5">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
             </div>
-            <p class="text-xs font-semibold text-slate-600">No printed documents yet</p>
-            <p class="text-[11px] text-slate-400 mt-1">Printed documents will move here with a crossed line and Reprint option.</p>
+            <p class="text-xs font-bold text-slate-600">No printed documents yet</p>
+            <p class="text-[11px] text-slate-400 mt-1">Completed items move here with their permanent Serial No., crossed line, and Reprint button.</p>
           </div>
         </aside>
 
       </div>
     </section>
-
   </main>
 
-  <!-- ========================================================= -->
-  <!-- FOOTER                                                    -->
-  <!-- ========================================================= -->
-  <footer class="bg-white border-t border-slate-200 mt-10">
-    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-      <div class="flex items-center gap-2">
-        <span class="font-semibold text-slate-700">PrintFlow Pro</span>
-        <span>•</span>
-        <span>Batch Document Printing &amp; Version Archive</span>
-      </div>
-      <div class="font-semibold text-slate-800 bg-slate-100 px-3.5 py-1 rounded-full border border-slate-200/80">
-        Made by Darpan sukla
-      </div>
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200/80 py-4 mt-10">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <div>PrintFlow Pro &bull; Batch Document Printing Utility (Max 200 Files)</div>
+      <div class="font-extrabold text-slate-800 text-sm tracking-tight">Made by Darpan sukla</div>
     </div>
   </footer>
 
-  <!-- ========================================================= -->
-  <!-- MODAL 1: CONNECT PRINTER                                  -->
-  <!-- ========================================================= -->
-  <div id="printerModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4" onclick="if(event.target===this) closePrinterModal()">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full shadow-xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+  <!-- CONNECT PRINTER MODAL -->
+  <div id="printer-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target === this) closePrinterModal()">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center">
-            <i data-lucide="printer" class="w-4 h-4"></i>
+          <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
           </div>
-          <h3 class="text-sm font-bold text-slate-900">Connect Printer</h3>
+          <h3 class="text-base font-extrabold text-slate-900">Connect Printer</h3>
         </div>
-        <button onclick="closePrinterModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button onclick="closePrinterModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
 
       <div class="p-6 space-y-4">
         <div>
-          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Select Output Printer</label>
-          <select id="printerSelect" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-indigo-500">
-            <option value="System Default Spooler">System Default Printer (OS Spooler)</option>
-            <option value="HP LaserJet Pro MFP M428fdw">HP LaserJet Pro MFP M428fdw (Wi-Fi / USB)</option>
-            <option value="Canon PIXMA G6020 Series">Canon PIXMA G6020 Series (Network)</option>
-            <option value="Epson EcoTank L3250">Epson EcoTank L3250 (Wireless)</option>
-            <option value="Brother HL-L2350DW Laser">Brother HL-L2350DW Laser Printer</option>
+          <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Select Printer Connection</label>
+          <select id="printer-select" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-indigo-500">
+            <option value="System Default Printer (OS Spooler)">System Default Printer (OS Spooler)</option>
+            <option value="HP LaserJet Pro MFP M428fdw (USB / Wi-Fi)">HP LaserJet Pro MFP M428fdw (USB / Wi-Fi)</option>
+            <option value="Canon PIXMA G3010 Series (Network)">Canon PIXMA G3010 Series (Network)</option>
+            <option value="Epson EcoTank L3250 (Wireless)">Epson EcoTank L3250 (Wireless)</option>
+            <option value="Brother HL-L2350DW Laser Printer">Brother HL-L2350DW Laser Printer</option>
           </select>
         </div>
 
-        <button onclick="scanUsbHardware()" class="w-full py-2.5 px-4 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer">
-          <i data-lucide="usb" class="w-4 h-4"></i>
-          Scan Local USB Hardware Printer
-        </button>
+        <div>
+          <button onclick="scanUsbPrinter()" class="w-full py-2.5 px-4 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Scan Local USB / Hardware Printer
+          </button>
+          <p id="usb-scan-msg" class="text-[11px] text-slate-500 mt-1.5 text-center"></p>
+        </div>
 
         <div class="grid grid-cols-2 gap-3 pt-1">
           <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Paper Size</label>
-            <select id="paperSizeSelect" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium text-slate-800">
-              <option value="A4">A4 (210 × 297 mm)</option>
-              <option value="Letter">US Letter</option>
-              <option value="Legal">US Legal</option>
-              <option value="4x6">4 × 6 Photo</option>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Paper Size</label>
+            <select id="paper-size-select" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">
+              <option value="A4">A4 (210 &times; 297 mm)</option>
+              <option value="Letter">Letter (8.5 &times; 11 in)</option>
+              <option value="Legal">Legal (8.5 &times; 14 in)</option>
+              <option value="4x6">Photo 4 &times; 6 in</option>
             </select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Color Mode</label>
-            <select id="colorModeSelect" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium text-slate-800">
-              <option value="Color">Full Color</option>
-              <option value="Grayscale">Grayscale / B&amp;W</option>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Color Mode</label>
+            <select id="color-mode-select" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">
+              <option value="Color">Color</option>
+              <option value="Grayscale">Black &amp; White</option>
             </select>
           </div>
         </div>
       </div>
 
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
-        <button onclick="closePrinterModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/70 cursor-pointer">Cancel</button>
-        <button onclick="confirmConnectPrinter()" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs cursor-pointer">
-          Connect &amp; Apply
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+        <button onclick="closePrinterModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition cursor-pointer">Cancel</button>
+        <button onclick="confirmConnectPrinter()" class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition cursor-pointer">
+          Connect &amp; Save
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- MODAL 2: SAVE VERSION SNAPSHOT (LOCAL STORAGE / IDB)      -->
-  <!-- ========================================================= -->
-  <div id="saveModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4" onclick="if(event.target===this) closeSaveModal()">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full shadow-xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
-            <i data-lucide="save" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-bold text-slate-900">Save Current Version</h3>
-            <p class="text-[11px] text-slate-500">Stores all files, thumbnails &amp; print statuses locally</p>
-          </div>
-        </div>
-        <button onclick="closeSaveModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer">
-          <i data-lucide="x" class="w-5 h-5"></i>
+  <!-- SAVE VERSION MODAL -->
+  <div id="save-version-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target === this) closeSaveVersionModal()">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h3 class="text-base font-extrabold text-slate-900">Save Current Session Version</h3>
+        <button onclick="closeSaveVersionModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
-
       <div class="p-6 space-y-4">
+        <p class="text-xs text-slate-500">Save your current documents, permanent Serial Numbers, copy counts, and Already Printed status to local browser storage so you can reopen this exact version anytime.</p>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Version / Batch Name</label>
-          <input type="text" id="snapshotNameInput" placeholder="e.g., Morning Invoices Batch #1" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
-        </div>
-        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-center justify-between">
-          <span>Documents included in snapshot:</span>
-          <strong id="snapshotDocSummary" class="font-mono text-indigo-600">0 files</strong>
+          <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Version Name</label>
+          <input id="version-name-input" type="text" placeholder="e.g. Morning Batch - Invoices" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-indigo-500" />
         </div>
       </div>
-
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
-        <button onclick="closeSaveModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/70 cursor-pointer">Cancel</button>
-        <button onclick="saveCurrentSnapshot()" id="confirmSaveBtn" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs cursor-pointer">
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+        <button onclick="closeSaveVersionModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition cursor-pointer">Cancel</button>
+        <button onclick="saveCurrentVersionToStorage()" class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition cursor-pointer">
           Save Version Locally
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- MODAL 3: SAVED VERSIONS ARCHIVE (RESTORE / DELETE)        -->
-  <!-- ========================================================= -->
-  <div id="loadModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4" onclick="if(event.target===this) closeLoadModal()">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-xl w-full shadow-xl overflow-hidden flex flex-col max-h-[85vh]">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center">
-            <i data-lucide="folder-clock" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-bold text-slate-900">Saved Batch Versions</h3>
-            <p class="text-[11px] text-slate-500">Restore any saved batch directly back into your workspace</p>
-          </div>
+  <!-- SAVED VERSIONS LIST MODAL -->
+  <div id="versions-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target === this) closeVersionsModal()">
+    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[85vh] flex flex-col border border-slate-200 shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Saved Local Versions</h3>
+          <p class="text-xs text-slate-500">Reopen any saved batch version directly into your workspace</p>
         </div>
-        <button onclick="closeLoadModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <button onclick="closeVersionsModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
-
-      <div id="savedVersionsList" class="p-5 overflow-y-auto space-y-2.5 flex-1"></div>
-
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-        <span class="text-[11px] text-slate-400">Stored locally in browser storage</span>
-        <button onclick="closeLoadModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer">Close</button>
-      </div>
+      <div id="versions-list-body" class="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar bg-slate-50/50"></div>
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- MODAL 4: CONFIRM CLEAR ALL                                -->
-  <!-- ========================================================= -->
-  <div id="clearConfirmModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4" onclick="if(event.target===this) closeClearModal()">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-sm w-full shadow-xl overflow-hidden p-6 text-center">
-      <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3">
-        <i data-lucide="trash-2" class="w-6 h-6"></i>
-      </div>
-      <h3 class="text-base font-bold text-slate-900">Clear All Documents?</h3>
-      <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
-        This will remove all pending and already printed documents from your active workspace. Saved versions in your archive will remain safe.
-      </p>
-      <div class="mt-5 flex items-center justify-center gap-2.5">
-        <button onclick="closeClearModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Cancel</button>
-        <button onclick="executeClearAll()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-2xs cursor-pointer">Yes, Clear All</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================================= -->
-  <!-- MODAL 5: FULL PHOTO / DOCUMENT PREVIEW                    -->
-  <!-- ========================================================= -->
-  <div id="previewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/75 backdrop-blur-xs p-4" onclick="if(event.target===this) closePreviewModal()">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+  <!-- FULL PHOTO / DOCUMENT PREVIEW MODAL -->
+  <div id="preview-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-4" onclick="if(event.target === this) closePreviewModal()">
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
       <div class="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
         <div class="truncate pr-4">
-          <h4 id="previewModalTitle" class="text-sm font-bold text-slate-900 truncate">Document Preview</h4>
-          <p id="previewModalMeta" class="text-xs text-slate-500"></p>
+          <h4 id="preview-modal-title" class="text-sm font-extrabold text-slate-900 truncate">Document Preview</h4>
+          <p id="preview-modal-meta" class="text-xs text-slate-500"></p>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <button id="previewModalPrintBtn" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer">
-            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-            <span id="previewModalPrintLabel">Direct Print</span>
+          <button id="preview-modal-print-btn" class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer">
+            Direct Print
           </button>
-          <button onclick="closePreviewModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer">
-            <i data-lucide="x" class="w-5 h-5"></i>
+          <button onclick="closePreviewModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
       </div>
-      <div id="previewModalBody" class="flex-1 overflow-auto p-6 bg-slate-100 flex items-center justify-center min-h-[320px]"></div>
+      <div id="preview-modal-body" class="flex-1 overflow-auto p-6 bg-slate-100 flex items-center justify-center min-h-[300px]"></div>
     </div>
   </div>
 
-  <!-- ========================================================= -->
-  <!-- APPLICATION JAVASCRIPT                                    -->
-  <!-- ========================================================= -->
   <script>
     if (typeof pdfjsLib !== 'undefined') {
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
 
     const MAX_FILES = 200;
-    const DB_NAME = 'PrintFlowProStorage';
-    const DB_STORE = 'saved_versions';
-    const META_LS_KEY = 'printflow_pro_saved_meta_v1';
+    const VERSIONS_META_KEY = 'printflow_pro_versions_meta_v2';
+    const DB_NAME = 'PrintFlowProStorageDB';
+    const STORE_NAME = 'saved_versions_store';
 
     let documentsList = [];
-    let currentScreen = 1;
+    // Monotonically increasing serial number counter: never repeats or resets automatically when items are printed or removed
+    let nextSerialNumber = 1;
+    let isPrintedPanelVisible = true;
+    let printedSortOrder = 'desc'; // 'desc' shows most recently printed/highest serial or user choice
+
     let connectedPrinter = {
       connected: false,
-      name: 'System Default Spooler',
+      name: 'System Default Printer (OS Spooler)',
       paperSize: 'A4',
       colorMode: 'Color'
     };
 
-    // Initialize on load
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      setupDropzone();
-      refreshSavedVersionsBadge();
-      updateAllUI();
-    });
-
-    // =========================================================
-    // TOAST FEEDBACK
-    // =========================================================
-    function showToast(title, message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      const styles = {
-        info: 'bg-white border-slate-200 text-slate-800',
-        success: 'bg-emerald-50 border-emerald-200 text-emerald-950',
-        warning: 'bg-amber-50 border-amber-200 text-amber-950',
-        error: 'bg-rose-50 border-rose-200 text-rose-950'
-      };
-      const icons = {
-        info: 'info',
-        success: 'check-circle-2',
-        warning: 'alert-triangle',
-        error: 'alert-circle'
-      };
-      const colors = {
-        info: 'text-indigo-600',
-        success: 'text-emerald-600',
-        warning: 'text-amber-600',
-        error: 'text-rose-600'
-      };
-
-      toast.className = `pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border shadow-lg transition-all duration-300 ${styles[type] || styles.info}`;
-      toast.innerHTML = `
-        <i data-lucide="${icons[type]}" class="w-4 h-4 mt-0.5 shrink-0 ${colors[type]}"></i>
-        <div class="flex-1 min-w-0">
-          <div class="text-xs font-bold">${escapeHtml(title)}</div>
-          <div class="text-[11px] opacity-90 mt-0.5 leading-snug">${escapeHtml(message)}</div>
-        </div>
-      `;
-      container.appendChild(toast);
-      lucide.createIcons({ root: toast });
-
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(8px)';
-        setTimeout(() => toast.remove(), 250);
-      }, 3400);
+    // IndexedDB helpers for storing full binary files across saved versions
+    function openVersionsDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = e => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
+        request.onsuccess = e => resolve(e.target.result);
+        request.onerror = e => reject(e.target.error);
+      });
     }
 
-    // =========================================================
-    // SCREEN NAVIGATION
-    // =========================================================
-    function switchScreen(screenNum) {
-      if (screenNum === 2 && documentsList.length === 0) {
-        showToast('No Documents Yet', 'Upload at least 1 document or load a saved version first.', 'warning');
-        return;
-      }
+    async function putVersionInDB(versionRecord) {
+      const db = await openVersionsDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(versionRecord);
+        tx.oncomplete = () => resolve();
+        tx.onerror = e => reject(e.target.error);
+      });
+    }
 
-      currentScreen = screenNum;
-      const s1 = document.getElementById('screen1');
-      const s2 = document.getElementById('screen2');
-      const nav1 = document.getElementById('navStep1Btn');
-      const nav2 = document.getElementById('navStep2Btn');
-      const badge2 = document.getElementById('navStep2Badge');
-      const mob1 = document.getElementById('mobStep1Btn');
-      const mob2 = document.getElementById('mobStep2Btn');
+    async function getVersionFromDB(id) {
+      const db = await openVersionsDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const req = tx.objectStore(STORE_NAME).get(id);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = e => reject(e.target.error);
+      });
+    }
+
+    async function deleteVersionFromDB(id) {
+      const db = await openVersionsDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = e => reject(e.target.error);
+      });
+    }
+
+    function getSavedVersionsMeta() {
+      try {
+        return JSON.parse(localStorage.getItem(VERSIONS_META_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function setSavedVersionsMeta(list) {
+      localStorage.setItem(VERSIONS_META_KEY, JSON.stringify(list));
+      updateSavedVersionsBadge();
+    }
+
+    function updateSavedVersionsBadge() {
+      const count = getSavedVersionsMeta().length;
+      document.getElementById('saved-versions-badge').textContent = count;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('global-toast');
+      document.getElementById('global-toast-msg').textContent = msg;
+      toast.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3200);
+    }
+
+    // Drag & Drop Handlers
+    const dropZone = document.getElementById('drop-zone');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evtName => {
+      dropZone.addEventListener(evtName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(evtName => {
+      dropZone.addEventListener(evtName, () => {
+        dropZone.classList.add('border-indigo-500', 'bg-indigo-50/50');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(evtName => {
+      dropZone.addEventListener(evtName, () => {
+        dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/50');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        handleFilesSelected(files);
+      }
+    });
+
+    // Screen Navigation
+    function switchScreen(screenNum) {
+      const s1 = document.getElementById('screen-1');
+      const s2 = document.getElementById('screen-2');
+      const nav1 = document.getElementById('nav-screen-1');
+      const nav2 = document.getElementById('nav-screen-2');
+      const mob1 = document.getElementById('mob-nav-1');
+      const mob2 = document.getElementById('mob-nav-2');
 
       if (screenNum === 1) {
         s1.classList.remove('hidden');
         s2.classList.add('hidden');
-        nav1.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-700 shadow-2xs cursor-pointer';
-        nav2.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
-        badge2.className = 'w-4.5 h-4.5 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-[10px] font-bold';
-        mob1.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white';
-        mob2.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-700 border border-slate-200';
+        nav1.className = 'px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs cursor-pointer';
+        nav2.className = 'px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+        mob1.className = 'flex-1 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-2xs';
+        mob2.className = 'flex-1 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200';
       } else {
         s1.classList.add('hidden');
         s2.classList.remove('hidden');
-        nav2.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-700 shadow-2xs cursor-pointer';
-        badge2.className = 'w-4.5 h-4.5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold';
-        nav1.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
-        mob2.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white';
-        mob1.className = 'flex-1 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-700 border border-slate-200';
-        renderWorkspace();
+        nav2.className = 'px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-indigo-600 shadow-xs cursor-pointer';
+        nav1.className = 'px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+        mob2.className = 'flex-1 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-2xs';
+        mob1.className = 'flex-1 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200';
+        renderQueueTables();
       }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // =========================================================
-    // SCREEN 1: DRAG & DROP + MULTI-FILE UPLOAD (MAX 200)
-    // =========================================================
-    function setupDropzone() {
-      const dropZone = document.getElementById('dropZone');
-      const fileInput = document.getElementById('fileInput');
+    // Printer Modal Controls
+    function openPrinterModal() {
+      document.getElementById('printer-modal').classList.remove('hidden');
+    }
 
-      dropZone.addEventListener('click', () => fileInput.click());
+    function closePrinterModal() {
+      document.getElementById('printer-modal').classList.add('hidden');
+    }
 
-      fileInput.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files.length > 0) {
-          handleIncomingFiles(Array.from(e.target.files));
-          fileInput.value = '';
+    async function scanUsbPrinter() {
+      const msg = document.getElementById('usb-scan-msg');
+      if (!navigator.usb) {
+        msg.textContent = 'Direct WebUSB not supported in this browser; using OS System Spooler.';
+        return;
+      }
+      try {
+        msg.textContent = 'Scanning USB ports for printer devices...';
+        const device = await navigator.usb.requestDevice({ filters: [] });
+        if (device) {
+          const printerName = `${device.productName || 'USB Printer'} (${device.manufacturerName || 'Connected'})`;
+          const select = document.getElementById('printer-select');
+          const opt = document.createElement('option');
+          opt.value = printerName;
+          opt.textContent = printerName;
+          opt.selected = true;
+          select.appendChild(opt);
+          msg.textContent = `Found: ${printerName}`;
         }
-      });
-
-      ['dragenter', 'dragover'].forEach(evt => {
-        dropZone.addEventListener(evt, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropZone.classList.add('dropzone-active');
-        });
-      });
-
-      ['dragleave', 'drop'].forEach(evt => {
-        dropZone.addEventListener(evt, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropZone.classList.remove('dropzone-active');
-        });
-      });
-
-      dropZone.addEventListener('drop', (e) => {
-        if (e.dataTransfer?.files?.length) {
-          handleIncomingFiles(Array.from(e.dataTransfer.files));
-        }
-      });
+      } catch (err) {
+        msg.textContent = 'USB scan cancelled or no external USB printer selected. OS Spooler is ready.';
+      }
     }
 
-    function triggerFilePicker() {
-      document.getElementById('fileInput').click();
+    function confirmConnectPrinter() {
+      const selectedName = document.getElementById('printer-select').value;
+      const paperSize = document.getElementById('paper-size-select').value;
+      const colorMode = document.getElementById('color-mode-select').value;
+
+      connectedPrinter = {
+        connected: true,
+        name: selectedName,
+        paperSize,
+        colorMode
+      };
+
+      const pill = document.getElementById('printer-status-pill');
+      const dot = document.getElementById('printer-status-dot');
+      const text = document.getElementById('printer-status-text');
+      const statPrinter = document.getElementById('stat-printer');
+
+      pill.className = 'hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80';
+      dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+      text.textContent = selectedName;
+      statPrinter.textContent = selectedName;
+
+      closePrinterModal();
+      showToast(`Connected to ${selectedName}`);
     }
 
-    async function handleIncomingFiles(files) {
-      const availableSlots = MAX_FILES - documentsList.length;
-      if (availableSlots <= 0) {
-        showToast('Batch Limit Reached', 'Maximum 200 documents allowed per batch.', 'error');
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    function getExtension(filename) {
+      const parts = filename.split('.');
+      return parts.length > 1 ? parts.pop().toUpperCase() : 'FILE';
+    }
+
+    // Upload Files & Assign Permanent Non-Repeating Serial Numbers
+    async function handleFilesSelected(fileList) {
+      const files = Array.from(fileList);
+      if (!files.length) return;
+
+      const remainingSlots = MAX_FILES - documentsList.length;
+      if (remainingSlots <= 0) {
+        showToast('Maximum limit of 200 documents reached.');
         return;
       }
 
-      const filesToProcess = files.slice(0, availableSlots);
-      if (files.length > availableSlots) {
-        showToast('Capped at 200 Files', `Added ${filesToProcess.length} file(s) to fit the 200-document limit.`, 'warning');
+      const filesToProcess = files.slice(0, remainingSlots);
+      if (files.length > remainingSlots) {
+        showToast(`Added ${filesToProcess.length} documents (200 batch limit reached).`);
+      } else {
+        showToast(`Added ${filesToProcess.length} document(s) starting at Serial #${nextSerialNumber}.`);
       }
 
       for (const file of filesToProcess) {
+        const assignedSerial = nextSerialNumber++;
         const id = 'doc_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-        const ext = (file.name.split('.').pop() || 'FILE').toUpperCase();
+        const ext = getExtension(file.name);
         const isImage = file.type.startsWith('image/') || ['PNG', 'JPG', 'JPEG', 'WEBP', 'GIF', 'BMP', 'SVG'].includes(ext);
         const isPdf = file.type === 'application/pdf' || ext === 'PDF';
         const objectUrl = URL.createObjectURL(file);
 
         const docObj = {
           id,
+          serialNo: assignedSerial,
           file,
           name: file.name,
-          mimeType: file.type || (isPdf ? 'application/pdf' : 'application/octet-stream'),
-          sizeBytes: file.size,
+          size: formatFileSize(file.size),
           ext,
           isImage,
           isPdf,
@@ -803,126 +820,120 @@
         }
       }
 
-      showToast('Files Added', `${filesToProcess.length} document(s) added to batch.`, 'success');
-      updateAllUI();
+      document.getElementById('file-input').value = '';
+      updateCountersAndStaging();
+      if (!document.getElementById('screen-2').classList.contains('hidden')) {
+        renderQueueTables();
+      }
     }
 
     async function generatePdfThumbnail(docObj) {
-      if (typeof pdfjsLib === 'undefined' || !docObj.file) return;
+      if (typeof pdfjsLib === 'undefined') return;
       try {
         const arrayBuffer = await docObj.file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         const page = await pdf.getPage(1);
-        const viewport = page.getViewport({ scale: 0.45 });
+        const viewport = page.getViewport({ scale: 0.5 });
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
 
         await page.render({ canvasContext: ctx, viewport }).promise;
-        docObj.thumbnailUrl = canvas.toDataURL('image/jpeg', 0.82);
-        updateAllUI();
-      } catch (e) {
-        // Fallback badge remains intact
+        docObj.thumbnailUrl = canvas.toDataURL('image/png');
+        updateCountersAndStaging();
+        if (!document.getElementById('screen-2').classList.contains('hidden')) {
+          renderQueueTables();
+        }
+      } catch (e) {}
+    }
+
+    function updateCountersAndStaging() {
+      const total = documentsList.length;
+      const pendingCount = documentsList.filter(d => d.status === 'pending').length;
+      const printedCount = documentsList.filter(d => d.status === 'printed').length;
+
+      document.getElementById('upload-counter').textContent = total;
+      document.getElementById('nav-count-badge').textContent = total;
+      document.getElementById('mob-count-badge').textContent = total;
+      document.getElementById('staging-count').textContent = total;
+      document.getElementById('capacity-bar').style.width = `${Math.min(100, (total / MAX_FILES) * 100)}%`;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-pending').textContent = pendingCount;
+      document.getElementById('stat-printed').textContent = printedCount;
+      document.getElementById('stat-next-serial').textContent = nextSerialNumber;
+      document.getElementById('pending-section-count').textContent = pendingCount;
+      document.getElementById('printed-section-count').textContent = printedCount;
+      document.getElementById('show-printed-count').textContent = printedCount;
+
+      const stagingArea = document.getElementById('staging-area');
+      const stagingGrid = document.getElementById('staging-grid');
+
+      if (total === 0) {
+        stagingArea.classList.add('hidden');
+        stagingGrid.innerHTML = '';
+        return;
       }
+
+      stagingArea.classList.remove('hidden');
+      stagingGrid.innerHTML = documentsList.map(doc => {
+        const isDone = doc.status === 'printed';
+        return `
+          <div class="relative group rounded-2xl border ${isDone ? 'border-emerald-200 bg-emerald-50/40' : 'border-slate-200 bg-white'} p-2.5 flex flex-col items-center text-center shadow-2xs hover:shadow-sm transition">
+            <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold ${isDone ? 'bg-emerald-600 text-white' : 'bg-slate-900/80 text-white'}">
+              #${doc.serialNo}
+            </span>
+            <button onclick="removeDocument('${doc.id}')" title="Remove file" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] font-bold opacity-0 group-hover:opacity-100 transition flex items-center justify-center shadow cursor-pointer">
+              &times;
+            </button>
+            <div class="w-full h-16 rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center mb-2">
+              ${doc.thumbnailUrl
+                ? `<img src="${doc.thumbnailUrl}" alt="${escapeHtml(doc.name)}" class="w-full h-full object-cover ${isDone ? 'opacity-60 grayscale' : ''}" />`
+                : `<span class="px-2 py-1 rounded-md bg-indigo-100 text-indigo-700 text-[10px] font-extrabold">${doc.ext}</span>`
+              }
+            </div>
+            <p class="text-[11px] font-bold text-slate-700 truncate w-full ${isDone ? 'line-through text-slate-400' : ''}">${escapeHtml(doc.name)}</p>
+            <span class="text-[10px] text-slate-400 mt-0.5">${doc.size}</span>
+          </div>
+        `;
+      }).join('');
     }
 
     function removeDocument(id) {
       const idx = documentsList.findIndex(d => d.id === id);
       if (idx !== -1) {
-        if (documentsList[idx].objectUrl) {
-          URL.revokeObjectURL(documentsList[idx].objectUrl);
-        }
+        URL.revokeObjectURL(documentsList[idx].objectUrl);
         documentsList.splice(idx, 1);
-        updateAllUI();
+        // Note: nextSerialNumber is NOT decremented so serial numbers never repeat
+        updateCountersAndStaging();
+        renderQueueTables();
       }
     }
 
-    // =========================================================
-    // CLEAR ALL CONTROLS
-    // =========================================================
     function confirmClearAll() {
       if (documentsList.length === 0) {
-        showToast('Workspace Empty', 'There are no documents to clear.', 'info');
+        showToast('Workspace is already empty.');
         return;
       }
-      const modal = document.getElementById('clearConfirmModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeClearModal() {
-      const modal = document.getElementById('clearConfirmModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function executeClearAll() {
-      documentsList.forEach(d => {
-        if (d.objectUrl) URL.revokeObjectURL(d.objectUrl);
-      });
-      documentsList = [];
-      closeClearModal();
-      updateAllUI();
-      if (currentScreen === 2) {
-        switchScreen(1);
+      if (confirm('Clear and remove all documents from both Pending Queue and Already Printed sections?')) {
+        documentsList.forEach(d => URL.revokeObjectURL(d.objectUrl));
+        documentsList = [];
+        updateCountersAndStaging();
+        renderQueueTables();
+        showToast('All documents cleared.');
       }
-      showToast('Workspace Cleared', 'All uploaded and printed documents have been removed.', 'info');
     }
 
-    // =========================================================
-    // UI UPDATES & RENDERING
-    // =========================================================
-    function updateAllUI() {
-      const total = documentsList.length;
-      const pendingCount = documentsList.filter(d => d.status === 'pending').length;
-      const printedCount = documentsList.filter(d => d.status === 'printed').length;
-      const totalBytes = documentsList.reduce((sum, d) => sum + (d.sizeBytes || 0), 0);
-
-      document.getElementById('navBatchCount').textContent = total;
-      document.getElementById('mobBatchCount').textContent = total;
-      document.getElementById('capacityCounterText').textContent = `${total} / ${MAX_FILES}`;
-      document.getElementById('capacityProgressBar').style.width = `${Math.min(100, (total / MAX_FILES) * 100)}%`;
-      document.getElementById('totalSizeText').textContent = formatBytes(totalBytes);
-      document.getElementById('remainingSlotsText').textContent = `${MAX_FILES - total} slots available`;
-
-      document.getElementById('kpiTotalDocs').textContent = total;
-      document.getElementById('kpiPendingDocs').textContent = pendingCount;
-      document.getElementById('kpiPrintedDocs').textContent = printedCount;
-      document.getElementById('pendingBadgeCount').textContent = pendingCount;
-      document.getElementById('printedBadgeCount').textContent = printedCount;
-
-      // Staging Grid (Screen 1)
-      const stagingSection = document.getElementById('stagingSection');
-      const stagingGrid = document.getElementById('stagedFilesGrid');
-      if (total === 0) {
-        stagingSection.classList.add('hidden');
-        stagingGrid.innerHTML = '';
-      } else {
-        stagingSection.classList.remove('hidden');
-        document.getElementById('stagedBadgeCount').textContent = total;
-        stagingGrid.innerHTML = documentsList.map(doc => {
-          const isDone = doc.status === 'printed';
-          return `
-            <div class="relative group rounded-xl border ${isDone ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-200 bg-white'} p-2 flex flex-col items-center text-center shadow-2xs">
-              <button onclick="removeDocument('${doc.id}')" title="Remove" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] font-bold opacity-0 group-hover:opacity-100 transition flex items-center justify-center shadow cursor-pointer">
-                &times;
-              </button>
-              <div class="w-full h-16 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center mb-1.5">
-                ${doc.thumbnailUrl
-                  ? `<img src="${doc.thumbnailUrl}" alt="${escapeHtml(doc.name)}" class="w-full h-full object-cover ${isDone ? 'opacity-60 grayscale' : ''}" />`
-                  : `<span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-100">${escapeHtml(doc.ext)}</span>`
-                }
-              </div>
-              <p class="text-[11px] font-medium text-slate-700 truncate w-full ${isDone ? 'line-through decoration-rose-500 text-slate-400' : ''}">${escapeHtml(doc.name)}</p>
-              <span class="text-[10px] text-slate-400">${formatBytes(doc.sizeBytes)}</span>
-            </div>
-          `;
-        }).join('');
-      }
-
-      if (currentScreen === 2) {
-        renderWorkspace();
+    function clearPrintedOnly() {
+      const printedDocs = documentsList.filter(d => d.status === 'printed');
+      if (printedDocs.length === 0) return;
+      if (confirm('Remove all Already Printed items from history? (Used Serial Numbers will still never repeat)')) {
+        printedDocs.forEach(d => URL.revokeObjectURL(d.objectUrl));
+        documentsList = documentsList.filter(d => d.status !== 'printed');
+        updateCountersAndStaging();
+        renderQueueTables();
+        showToast('Cleared Already Printed history.');
       }
     }
 
@@ -934,120 +945,185 @@
       }
     }
 
-    function renderWorkspace() {
-      const searchQuery = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+    // Toggle Hide / Show Already Printed Panel
+    function togglePrintedSection(show) {
+      isPrintedPanelVisible = show;
+      const printedCol = document.getElementById('printed-column');
+      const pendingCol = document.getElementById('pending-column');
+      const showBtn = document.getElementById('show-printed-panel-btn');
 
-      const pendingDocs = documentsList.filter(d => d.status === 'pending' && d.name.toLowerCase().includes(searchQuery));
-      const printedDocs = documentsList.filter(d => d.status === 'printed' && d.name.toLowerCase().includes(searchQuery));
+      if (isPrintedPanelVisible) {
+        printedCol.classList.remove('hidden');
+        pendingCol.classList.remove('lg:col-span-12');
+        pendingCol.classList.add('lg:col-span-8');
+        showBtn.classList.add('hidden');
+      } else {
+        printedCol.classList.add('hidden');
+        pendingCol.classList.remove('lg:col-span-8');
+        pendingCol.classList.add('lg:col-span-12');
+        showBtn.classList.remove('hidden');
+      }
+    }
 
-      // 1. Render Left Column: Pending Print Queue Table
-      const pendingBody = document.getElementById('pendingTableBody');
-      const pendingEmpty = document.getElementById('pendingEmptyState');
+    function togglePrintedOptionsMenu() {
+      const menu = document.getElementById('printed-options-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', e => {
+      const menu = document.getElementById('printed-options-menu');
+      if (menu && !menu.classList.contains('hidden')) {
+        if (!e.target.closest('#printed-column')) {
+          menu.classList.add('hidden');
+        }
+      }
+    });
+
+    function sortPrintedBySerial(order) {
+      printedSortOrder = order;
+      renderQueueTables();
+    }
+
+    // Render Pending Table & Top-Right Already Printed Section using Permanent doc.serialNo
+    function renderQueueTables() {
+      updateCountersAndStaging();
+      const searchTerm = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
+
+      const matchesSearch = d =>
+        d.name.toLowerCase().includes(searchTerm) ||
+        String(d.serialNo).includes(searchTerm) ||
+        ('#' + d.serialNo).includes(searchTerm);
+
+      const pendingDocs = documentsList
+        .filter(d => d.status === 'pending' && matchesSearch(d))
+        .sort((a, b) => a.serialNo - b.serialNo);
+
+      const printedDocs = documentsList
+        .filter(d => d.status === 'printed' && matchesSearch(d))
+        .sort((a, b) => printedSortOrder === 'asc' ? a.serialNo - b.serialNo : b.serialNo - a.serialNo);
+
+      const pendingBody = document.getElementById('pending-table-body');
+      const pendingEmpty = document.getElementById('pending-empty-state');
 
       if (pendingDocs.length === 0) {
         pendingBody.innerHTML = '';
         pendingEmpty.classList.remove('hidden');
       } else {
         pendingEmpty.classList.add('hidden');
-        pendingBody.innerHTML = pendingDocs.map((doc, idx) => `
-          <tr class="hover:bg-slate-50/90 transition">
-            <td class="py-3 px-4 text-center font-mono text-xs font-semibold text-slate-400">${idx + 1}</td>
-            <td class="py-3 px-4">
-              <button onclick="openPreviewModal('${doc.id}')" class="w-12 h-13 rounded-lg border border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-indigo-500 transition shadow-2xs cursor-pointer" title="Click to enlarge preview">
+        pendingBody.innerHTML = pendingDocs.map(doc => `
+          <tr class="hover:bg-indigo-50/30 transition group">
+            <td class="py-3.5 px-4">
+              <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg text-xs font-extrabold bg-slate-100 text-slate-800 border border-slate-200/80">
+                #${doc.serialNo}
+              </span>
+            </td>
+            <td class="py-3.5 px-4">
+              <div onclick="openPreviewModal('${doc.id}')" class="w-12 h-12 rounded-xl border border-slate-200 bg-slate-100 overflow-hidden flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-indigo-500 transition shadow-2xs" title="Click to preview">
                 ${doc.thumbnailUrl
                   ? `<img src="${doc.thumbnailUrl}" alt="${escapeHtml(doc.name)}" class="w-full h-full object-cover" />`
-                  : `<span class="text-[10px] font-bold text-indigo-700">${escapeHtml(doc.ext)}</span>`
+                  : `<span class="text-[10px] font-extrabold text-indigo-700">${doc.ext}</span>`
                 }
-              </button>
+              </div>
             </td>
-            <td class="py-3 px-4">
-              <div class="font-semibold text-slate-900 text-xs sm:text-sm max-w-[200px] sm:max-w-xs truncate" title="${escapeHtml(doc.name)}">${escapeHtml(doc.name)}</div>
-              <div class="text-[11px] text-slate-400 mt-0.5">${formatBytes(doc.sizeBytes)}</div>
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-900 max-w-xs sm:max-w-sm truncate" title="${escapeHtml(doc.name)}">${escapeHtml(doc.name)}</div>
+              <div class="text-[11px] font-medium text-slate-400 mt-0.5">${doc.size}</div>
             </td>
-            <td class="py-3 px-4">
-              <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700 font-mono">${escapeHtml(doc.ext)}</span>
+            <td class="py-3.5 px-4">
+              <span class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-slate-100 text-slate-700">${doc.ext}</span>
             </td>
-            <td class="py-3 px-4 text-center">
-              <input type="number" min="1" max="99" value="${doc.copies}" onchange="updateCopies('${doc.id}', this.value)" class="w-14 text-center rounded-lg border border-slate-200 py-1 text-xs font-mono font-semibold text-slate-800 focus:outline-none focus:border-indigo-500" />
+            <td class="py-3.5 px-4">
+              <input type="number" min="1" max="99" value="${doc.copies}" onchange="updateCopies('${doc.id}', this.value)" class="w-16 rounded-xl border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500 bg-slate-50/70 focus:bg-white" />
             </td>
-            <td class="py-3 px-4 text-right">
+            <td class="py-3.5 px-4 text-right">
               <div class="inline-flex items-center gap-1.5">
-                <button onclick="directPrintDocument('${doc.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs active:scale-[0.98] transition cursor-pointer">
-                  <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                <button onclick="directPrintDocument('${doc.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs active:scale-[0.98] transition cursor-pointer">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                  </svg>
                   Direct Print
                 </button>
-                <button onclick="removeDocument('${doc.id}')" title="Remove" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                <button onclick="removeDocument('${doc.id}')" title="Delete document" class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
                 </button>
               </div>
             </td>
           </tr>
         `).join('');
-        lucide.createIcons({ root: pendingBody });
       }
 
-      // 2. Render Top-Right Column: Already Printed Section (Crossed Line + Reprint ONLY)
-      const printedContainer = document.getElementById('printedListContainer');
-      const printedEmpty = document.getElementById('printedEmptyState');
+      const printedContainer = document.getElementById('printed-list-container');
+      const printedEmpty = document.getElementById('printed-empty-state');
 
       if (printedDocs.length === 0) {
         printedContainer.innerHTML = '';
         printedEmpty.classList.remove('hidden');
       } else {
         printedEmpty.classList.add('hidden');
-        printedContainer.innerHTML = printedDocs.map((doc) => `
-          <div class="p-3.5 flex items-center gap-3 bg-emerald-50/20 hover:bg-emerald-50/50 transition">
+        printedContainer.innerHTML = printedDocs.map(doc => `
+          <div class="p-3.5 hover:bg-emerald-50/40 transition flex items-center gap-3">
+            <!-- Permanent Serial Badge -->
+            <div class="shrink-0 flex flex-col items-center">
+              <span class="px-2 py-1 rounded-lg text-[11px] font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-200">
+                #${doc.serialNo}
+              </span>
+            </div>
+
             <!-- Small Photo Thumbnail -->
-            <button onclick="openPreviewModal('${doc.id}')" class="w-11 h-12 rounded-lg border border-emerald-200 bg-white overflow-hidden flex items-center justify-center shrink-0 opacity-80 hover:opacity-100 transition cursor-pointer" title="Preview document">
+            <div onclick="openPreviewModal('${doc.id}')" class="w-11 h-11 rounded-xl border border-emerald-200 bg-slate-50 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer opacity-80 hover:opacity-100 transition" title="Preview document">
               ${doc.thumbnailUrl
                 ? `<img src="${doc.thumbnailUrl}" alt="${escapeHtml(doc.name)}" class="w-full h-full object-cover grayscale" />`
-                : `<span class="text-[9px] font-bold text-slate-500">${escapeHtml(doc.ext)}</span>`
+                : `<span class="text-[9px] font-extrabold text-slate-500">${doc.ext}</span>`
               }
-            </button>
+            </div>
 
-            <!-- Crossed-out Document Info & Status -->
+            <!-- Crossed-Line Document Info -->
             <div class="min-w-0 flex-1">
-              <div class="text-xs font-semibold text-slate-500 line-through decoration-rose-500 decoration-2 truncate" title="${escapeHtml(doc.name)}">
+              <div class="text-xs font-bold text-slate-500 line-through decoration-rose-500 decoration-2 truncate" title="${escapeHtml(doc.name)}">
                 ${escapeHtml(doc.name)}
               </div>
-              <div class="flex items-center gap-1.5 mt-1">
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  <i data-lucide="check" class="w-2.5 h-2.5 text-emerald-700"></i>
+              <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
+                  <svg class="w-2.5 h-2.5 text-emerald-700" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
                   Already Printed
                 </span>
-                ${doc.printedAt ? `<span class="text-[10px] text-slate-400 font-mono">${doc.printedAt}</span>` : ''}
+                ${doc.printedAt ? `<span class="text-[10px] font-medium text-slate-400">${doc.printedAt}</span>` : ''}
               </div>
             </div>
 
-            <!-- Reprint Only Button (No Undo) -->
-            <button onclick="directPrintDocument('${doc.id}')" class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 hover:border-emerald-300 shadow-2xs transition cursor-pointer" title="Reprint document">
-              <i data-lucide="rotate-cw" class="w-3 h-3"></i>
+            <!-- Reprint Only Button -->
+            <button onclick="directPrintDocument('${doc.id}')" class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-white hover:bg-indigo-50 text-indigo-700 border border-slate-200 hover:border-indigo-200 shadow-2xs transition cursor-pointer">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               Reprint
             </button>
           </div>
         `).join('');
-        lucide.createIcons({ root: printedContainer });
       }
     }
 
-    // =========================================================
-    // DIRECT PRINT ENGINE
-    // =========================================================
     function markDocumentAsPrinted(id) {
       const doc = documentsList.find(d => d.id === id);
       if (doc) {
         doc.status = 'printed';
-        doc.printedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        updateAllUI();
+        const now = new Date();
+        doc.printedAt = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        renderQueueTables();
       }
     }
 
+    // Direct Print Execution
     async function directPrintDocument(id) {
       const doc = documentsList.find(d => d.id === id);
       if (!doc) return;
 
       if (!connectedPrinter.connected) {
-        confirmConnectPrinter(true);
+        confirmConnectPrinter();
       }
 
       const printStage = document.getElementById('print-stage');
@@ -1061,14 +1137,14 @@
         }
         await waitForImages(printStage);
         triggerSystemPrint(() => markDocumentAsPrinted(id));
-      } else if (doc.isPdf && typeof pdfjsLib !== 'undefined' && doc.file) {
+      } else if (doc.isPdf && typeof pdfjsLib !== 'undefined') {
         try {
           const arrayBuffer = await doc.file.arrayBuffer();
           const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
           for (let c = 0; c < doc.copies; c++) {
             for (let p = 1; p <= pdf.numPages; p++) {
               const page = await pdf.getPage(p);
-              const viewport = page.getViewport({ scale: 1.7 });
+              const viewport = page.getViewport({ scale: 1.8 });
               const canvas = document.createElement('canvas');
               const ctx = canvas.getContext('2d');
               canvas.width = viewport.width;
@@ -1082,33 +1158,25 @@
           window.open(doc.objectUrl, '_blank');
           markDocumentAsPrinted(id);
         }
-      } else if (doc.thumbnailUrl) {
-        for (let i = 0; i < doc.copies; i++) {
-          const img = document.createElement('img');
-          img.src = doc.thumbnailUrl;
-          printStage.appendChild(img);
-        }
-        await waitForImages(printStage);
-        triggerSystemPrint(() => markDocumentAsPrinted(id));
       } else {
         const box = document.createElement('div');
         box.style.padding = '40px';
         box.style.textAlign = 'center';
-        box.innerHTML = `<h2 style="font-size:20px;font-weight:bold;">${escapeHtml(doc.name)}</h2><p>Format: ${escapeHtml(doc.ext)} • ${formatBytes(doc.sizeBytes)}</p>`;
+        box.innerHTML = `<h2 style="font-size:20px;font-weight:bold;">#${doc.serialNo} - ${escapeHtml(doc.name)}</h2><p>Format: ${doc.ext} | Size: ${doc.size}</p>`;
         printStage.appendChild(box);
         triggerSystemPrint(() => markDocumentAsPrinted(id));
       }
     }
 
     async function printAllPending() {
-      const pendingDocs = documentsList.filter(d => d.status === 'pending');
+      const pendingDocs = documentsList.filter(d => d.status === 'pending').sort((a, b) => a.serialNo - b.serialNo);
       if (pendingDocs.length === 0) {
-        showToast('Nothing Pending', 'All documents in your batch are already printed.', 'info');
+        showToast('No pending documents to print.');
         return;
       }
 
       if (!connectedPrinter.connected) {
-        confirmConnectPrinter(true);
+        confirmConnectPrinter();
       }
 
       const printStage = document.getElementById('print-stage');
@@ -1121,7 +1189,7 @@
             img.src = doc.objectUrl;
             printStage.appendChild(img);
           }
-        } else if (doc.isPdf && typeof pdfjsLib !== 'undefined' && doc.file) {
+        } else if (doc.isPdf && typeof pdfjsLib !== 'undefined') {
           try {
             const arrayBuffer = await doc.file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -1138,12 +1206,6 @@
               }
             }
           } catch (e) {}
-        } else if (doc.thumbnailUrl) {
-          for (let c = 0; c < doc.copies; c++) {
-            const img = document.createElement('img');
-            img.src = doc.thumbnailUrl;
-            printStage.appendChild(img);
-          }
         }
       }
 
@@ -1178,399 +1240,226 @@
       }, 150);
     }
 
-    // =========================================================
-    // CONNECT PRINTER MODAL & HARDWARE SCAN
-    // =========================================================
-    function openPrinterModal() {
-      const modal = document.getElementById('printerModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closePrinterModal() {
-      const modal = document.getElementById('printerModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    async function scanUsbHardware() {
-      if (!navigator.usb) {
-        showToast('System Spooler Active', 'All OS-installed USB and Wi-Fi printers are ready via System Default Spooler.', 'info');
-        return;
-      }
-      try {
-        const device = await navigator.usb.requestDevice({ filters: [{ classCode: 7 }] });
-        if (device) {
-          const name = device.productName || `USB Printer (VID:${device.vendorId})`;
-          const select = document.getElementById('printerSelect');
-          const opt = document.createElement('option');
-          opt.value = name;
-          opt.textContent = name;
-          opt.selected = true;
-          select.appendChild(opt);
-          showToast('USB Printer Found', `Selected ${name}`, 'success');
-        }
-      } catch (e) {
-        showToast('System Spooler Ready', 'Use System Default Printer or select your printer from the list.', 'info');
-      }
-    }
-
-    function confirmConnectPrinter(silent = false) {
-      const selectedName = document.getElementById('printerSelect').value;
-      const paperSize = document.getElementById('paperSizeSelect').value;
-      const colorMode = document.getElementById('colorModeSelect').value;
-
-      connectedPrinter = {
-        connected: true,
-        name: selectedName,
-        paperSize,
-        colorMode
-      };
-
-      document.getElementById('printerStatusLabel').textContent = 'Connected';
-      document.getElementById('activePrinterName').textContent = selectedName;
-      document.getElementById('printerStatusPing').className = 'pulse-dot absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75';
-      document.getElementById('printerStatusDot').className = 'relative inline-flex rounded-full h-2 w-2 bg-emerald-400';
-
-      closePrinterModal();
-      if (!silent) {
-        showToast('Printer Connected', `Connected to ${selectedName} (${paperSize}, ${colorMode}).`, 'success');
-      }
-    }
-
-    // =========================================================
-    // LOCAL STORAGE + INDEXEDDB VERSION SNAPSHOT SYSTEM
-    // =========================================================
-    function openStorageDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-        request.onupgradeneeded = (e) => {
-          const db = e.target.result;
-          if (!db.objectStoreNames.contains(DB_STORE)) {
-            db.createObjectStore(DB_STORE, { keyPath: 'id' });
-          }
-        };
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-    }
-
-    function getSavedMetaList() {
-      try {
-        return JSON.parse(localStorage.getItem(META_LS_KEY) || '[]');
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function setSavedMetaList(list) {
-      localStorage.setItem(META_LS_KEY, JSON.stringify(list));
-      refreshSavedVersionsBadge();
-    }
-
-    function refreshSavedVersionsBadge() {
-      const list = getSavedMetaList();
-      document.getElementById('savedVersionsBadge').textContent = list.length;
-    }
-
-    function openSaveModal() {
+    // Save & Restore Local Storage Versions
+    function openSaveVersionModal() {
       if (documentsList.length === 0) {
-        showToast('Nothing to Save', 'Upload documents before saving a version snapshot.', 'warning');
+        showToast('Upload at least one document before saving a session version.');
         return;
       }
       const now = new Date();
-      const defaultName = `Batch Version — ${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-      document.getElementById('snapshotNameInput').value = defaultName;
-      document.getElementById('snapshotDocSummary').textContent = `${documentsList.length} file(s) (${documentsList.filter(d => d.status === 'printed').length} printed)`;
-
-      const modal = document.getElementById('saveModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      const defaultName = `Batch_${now.toLocaleDateString().replace(/\//g, '-')}_${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      document.getElementById('version-name-input').value = defaultName;
+      document.getElementById('save-version-modal').classList.remove('hidden');
     }
 
-    function closeSaveModal() {
-      const modal = document.getElementById('saveModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+    function closeSaveVersionModal() {
+      document.getElementById('save-version-modal').classList.add('hidden');
     }
 
-    async function saveCurrentSnapshot() {
-      if (documentsList.length === 0) return;
-
-      const btn = document.getElementById('confirmSaveBtn');
-      btn.disabled = true;
-      btn.textContent = 'Saving...';
+    async function saveCurrentVersionToStorage() {
+      const rawName = document.getElementById('version-name-input').value.trim();
+      const versionName = rawName || `Batch Session ${new Date().toLocaleTimeString()}`;
+      const versionId = 'ver_' + Date.now();
 
       try {
-        const title = (document.getElementById('snapshotNameInput').value || '').trim() || `Saved Batch ${new Date().toLocaleTimeString()}`;
-        const versionId = 'ver_' + Date.now();
-        const savedAt = new Date().toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
-
-        // Serialize documents with Blob/File data so IndexedDB stores full binary & thumbnails cleanly
-        const serializedDocs = await Promise.all(documentsList.map(async (doc) => {
-          let blobData = doc.file || null;
-          if (!blobData && doc.objectUrl) {
-            try {
-              const resp = await fetch(doc.objectUrl);
-              blobData = await resp.blob();
-            } catch (e) {}
-          }
-          return {
-            id: doc.id,
-            name: doc.name,
-            mimeType: doc.mimeType,
-            sizeBytes: doc.sizeBytes,
-            ext: doc.ext,
-            isImage: doc.isImage,
-            isPdf: doc.isPdf,
-            thumbnailUrl: doc.thumbnailUrl,
-            copies: doc.copies,
-            status: doc.status,
-            printedAt: doc.printedAt,
-            blobData
-          };
+        const serializedDocs = documentsList.map(d => ({
+          id: d.id,
+          serialNo: d.serialNo,
+          file: d.file,
+          name: d.name,
+          size: d.size,
+          ext: d.ext,
+          isImage: d.isImage,
+          isPdf: d.isPdf,
+          thumbnailUrl: d.isPdf ? d.thumbnailUrl : null,
+          copies: d.copies,
+          status: d.status,
+          printedAt: d.printedAt
         }));
 
-        const payload = {
+        const pendingCount = documentsList.filter(d => d.status === 'pending').length;
+        const printedCount = documentsList.filter(d => d.status === 'printed').length;
+
+        const record = {
           id: versionId,
-          title,
-          savedAt,
-          printerConfig: { ...connectedPrinter },
-          documents: serializedDocs
+          name: versionName,
+          savedAt: new Date().toLocaleString(),
+          nextSerialNumber,
+          printer: connectedPrinter,
+          totalCount: documentsList.length,
+          pendingCount,
+          printedCount,
+          docs: serializedDocs
         };
 
-        const db = await openStorageDB();
-        await new Promise((resolve, reject) => {
-          const tx = db.transaction(DB_STORE, 'readwrite');
-          tx.objectStore(DB_STORE).put(payload);
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(tx.error);
-        });
+        await putVersionInDB(record);
 
-        // Update lightweight index in localStorage
-        const metaList = getSavedMetaList();
+        const metaList = getSavedVersionsMeta();
         metaList.unshift({
           id: versionId,
-          title,
-          savedAt,
-          totalCount: documentsList.length,
-          printedCount: documentsList.filter(d => d.status === 'printed').length
+          name: versionName,
+          savedAt: record.savedAt,
+          totalCount: record.totalCount,
+          pendingCount,
+          printedCount
         });
-        setSavedMetaList(metaList);
+        setSavedVersionsMeta(metaList);
 
-        closeSaveModal();
-        showToast('Version Saved', `"${title}" saved locally and ready to reopen anytime.`, 'success');
+        closeSaveVersionModal();
+        showToast(`Saved "${versionName}" to local storage.`);
       } catch (err) {
-        console.error(err);
-        showToast('Save Error', 'Could not save version to browser storage.', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Save Version Locally';
+        showToast('Failed to save version locally: ' + err.message);
       }
     }
 
-    function openLoadModal() {
+    function openVersionsModal() {
       renderSavedVersionsList();
-      const modal = document.getElementById('loadModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      document.getElementById('versions-modal').classList.remove('hidden');
     }
 
-    function closeLoadModal() {
-      const modal = document.getElementById('loadModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+    function closeVersionsModal() {
+      document.getElementById('versions-modal').classList.add('hidden');
     }
 
     function renderSavedVersionsList() {
-      const container = document.getElementById('savedVersionsList');
-      const metaList = getSavedMetaList();
+      const body = document.getElementById('versions-list-body');
+      const metaList = getSavedVersionsMeta();
 
       if (metaList.length === 0) {
-        container.innerHTML = `
-          <div class="py-12 text-center">
-            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
-              <i data-lucide="folder-open" class="w-6 h-6"></i>
-            </div>
-            <h4 class="text-sm font-bold text-slate-800">No Saved Versions Yet</h4>
-            <p class="text-xs text-slate-500 mt-1">Click <strong>Save Session</strong> anytime to store your current documents and print progress.</p>
+        body.innerHTML = `
+          <div class="py-10 text-center">
+            <p class="text-sm font-bold text-slate-700">No saved versions yet</p>
+            <p class="text-xs text-slate-400 mt-1">Click "Save Session" in the top bar to save your current documents and status.</p>
           </div>
         `;
-        lucide.createIcons({ root: container });
         return;
       }
 
-      container.innerHTML = metaList.map(item => `
-        <div class="p-3.5 rounded-xl border border-slate-200 hover:border-indigo-300 bg-slate-50/60 hover:bg-white transition flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-xs font-bold text-slate-900 truncate">${escapeHtml(item.title)}</div>
-            <div class="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-500">
-              <span>${escapeHtml(item.savedAt)}</span>
-              <span>•</span>
-              <span class="font-semibold text-indigo-600">${item.totalCount} files</span>
-              <span>•</span>
-              <span class="text-emerald-600 font-semibold">${item.printedCount} printed</span>
+      body.innerHTML = metaList.map(v => `
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div>
+            <h4 class="text-sm font-extrabold text-slate-900">${escapeHtml(v.name)}</h4>
+            <div class="text-[11px] text-slate-400 mt-0.5">Saved: ${escapeHtml(v.savedAt)}</div>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700">${v.totalCount} Files</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/70">${v.pendingCount} Pending</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70">${v.printedCount} Printed</span>
             </div>
           </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <button onclick="restoreSavedVersion('${item.id}')" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-2xs transition cursor-pointer">
-              <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="loadSavedVersion('${v.id}')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition cursor-pointer">
               Open Version
             </button>
-            <button onclick="deleteSavedVersion('${item.id}')" class="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer" title="Delete saved version">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <button onclick="deleteSavedVersion('${v.id}')" title="Delete saved version" class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
             </button>
           </div>
         </div>
       `).join('');
-      lucide.createIcons({ root: container });
     }
 
-    async function restoreSavedVersion(versionId) {
+    async function loadSavedVersion(versionId) {
       try {
-        const db = await openStorageDB();
-        const record = await new Promise((resolve, reject) => {
-          const tx = db.transaction(DB_STORE, 'readonly');
-          const req = tx.objectStore(DB_STORE).get(versionId);
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => reject(req.error);
-        });
-
-        if (!record || !record.documents) {
-          showToast('Version Missing', 'Saved data could not be found in storage.', 'error');
+        const record = await getVersionFromDB(versionId);
+        if (!record) {
+          showToast('Saved version data not found.');
           return;
         }
 
-        // Clean up existing object URLs before restoring
-        documentsList.forEach(d => {
-          if (d.objectUrl) URL.revokeObjectURL(d.objectUrl);
-        });
-
-        documentsList = record.documents.map(item => {
-          let reconstructedFile = null;
-          let objectUrl = item.thumbnailUrl || '';
-
-          if (item.blobData) {
-            reconstructedFile = new File([item.blobData], item.name, { type: item.mimeType });
-            objectUrl = URL.createObjectURL(reconstructedFile);
-          }
-
+        documentsList.forEach(d => URL.revokeObjectURL(d.objectUrl));
+        documentsList = record.docs.map(d => {
+          const objectUrl = URL.createObjectURL(d.file);
           return {
-            id: item.id,
-            file: reconstructedFile,
-            name: item.name,
-            mimeType: item.mimeType,
-            sizeBytes: item.sizeBytes,
-            ext: item.ext,
-            isImage: item.isImage,
-            isPdf: item.isPdf,
+            ...d,
             objectUrl,
-            thumbnailUrl: item.isImage ? objectUrl : item.thumbnailUrl,
-            copies: item.copies || 1,
-            status: item.status || 'pending',
-            printedAt: item.printedAt || null
+            thumbnailUrl: d.isImage ? objectUrl : d.thumbnailUrl
           };
         });
 
-        if (record.printerConfig && record.printerConfig.name) {
-          connectedPrinter = { ...record.printerConfig };
-          document.getElementById('activePrinterName').textContent = connectedPrinter.name;
+        nextSerialNumber = record.nextSerialNumber || (documentsList.reduce((max, d) => Math.max(max, d.serialNo), 0) + 1);
+
+        if (record.printer && record.printer.connected) {
+          connectedPrinter = record.printer;
+          const pill = document.getElementById('printer-status-pill');
+          const dot = document.getElementById('printer-status-dot');
+          const text = document.getElementById('printer-status-text');
+          const statPrinter = document.getElementById('stat-printer');
+          pill.className = 'hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80';
+          dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+          text.textContent = connectedPrinter.name;
+          statPrinter.textContent = connectedPrinter.name;
         }
 
-        closeLoadModal();
-        updateAllUI();
+        closeVersionsModal();
         switchScreen(2);
-        showToast('Version Restored', `Loaded "${record.title}" (${documentsList.length} documents).`, 'success');
+        renderQueueTables();
+        showToast(`Loaded "${record.name}" into workspace.`);
       } catch (err) {
-        console.error(err);
-        showToast('Restore Failed', 'Unable to load saved version.', 'error');
+        showToast('Error opening version: ' + err.message);
       }
     }
 
     async function deleteSavedVersion(versionId) {
-      try {
-        const db = await openStorageDB();
-        await new Promise((resolve, reject) => {
-          const tx = db.transaction(DB_STORE, 'readwrite');
-          tx.objectStore(DB_STORE).delete(versionId);
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(tx.error);
-        });
-
-        const updated = getSavedMetaList().filter(v => v.id !== versionId);
-        setSavedMetaList(updated);
-        renderSavedVersionsList();
-        showToast('Deleted', 'Saved version removed from archive.', 'info');
-      } catch (e) {
-        showToast('Error', 'Could not delete saved version.', 'error');
-      }
+      if (!confirm('Delete this saved version permanently?')) return;
+      await deleteVersionFromDB(versionId);
+      const updated = getSavedVersionsMeta().filter(v => v.id !== versionId);
+      setSavedVersionsMeta(updated);
+      renderSavedVersionsList();
+      showToast('Saved version deleted.');
     }
 
-    // =========================================================
-    // LARGE PREVIEW MODAL
-    // =========================================================
+    // Preview Modal Controls
     function openPreviewModal(id) {
       const doc = documentsList.find(d => d.id === id);
       if (!doc) return;
 
-      document.getElementById('previewModalTitle').textContent = doc.name;
-      document.getElementById('previewModalMeta').textContent = `${doc.ext} • ${formatBytes(doc.sizeBytes)} • ${doc.status === 'printed' ? 'Already Printed' : 'Pending Print'}`;
-      document.getElementById('previewModalPrintLabel').textContent = doc.status === 'printed' ? 'Reprint' : 'Direct Print';
+      document.getElementById('preview-modal-title').textContent = `#${doc.serialNo} — ${doc.name}`;
+      document.getElementById('preview-modal-meta').textContent = `Serial #${doc.serialNo} • ${doc.ext} • ${doc.size} • Status: ${doc.status === 'printed' ? 'Already Printed' : 'Pending Print'}`;
 
-      const printBtn = document.getElementById('previewModalPrintBtn');
+      const printBtn = document.getElementById('preview-modal-print-btn');
+      printBtn.textContent = doc.status === 'printed' ? 'Reprint Document' : 'Direct Print';
       printBtn.onclick = () => {
         closePreviewModal();
         directPrintDocument(doc.id);
       };
 
-      const body = document.getElementById('previewModalBody');
-      if (doc.isImage && doc.objectUrl) {
-        body.innerHTML = `<img src="${doc.objectUrl}" alt="${escapeHtml(doc.name)}" class="max-h-[65vh] rounded-xl shadow-md object-contain bg-white" />`;
-      } else if (doc.isPdf && doc.objectUrl) {
-        body.innerHTML = `<iframe src="${doc.objectUrl}" class="w-full h-[65vh] rounded-xl border border-slate-200 bg-white"></iframe>`;
-      } else if (doc.thumbnailUrl) {
-        body.innerHTML = `<img src="${doc.thumbnailUrl}" alt="${escapeHtml(doc.name)}" class="max-h-[65vh] rounded-xl shadow-md object-contain bg-white" />`;
+      const body = document.getElementById('preview-modal-body');
+      if (doc.isImage) {
+        body.innerHTML = `<img src="${doc.objectUrl}" alt="${escapeHtml(doc.name)}" class="max-h-[65vh] rounded-2xl shadow-md object-contain" />`;
+      } else if (doc.isPdf) {
+        body.innerHTML = `<iframe src="${doc.objectUrl}" class="w-full h-[65vh] rounded-2xl border border-slate-200 bg-white"></iframe>`;
       } else {
         body.innerHTML = `
           <div class="text-center p-8 bg-white rounded-2xl border border-slate-200">
-            <span class="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-bold text-xs">${escapeHtml(doc.ext)}</span>
-            <p class="mt-3 font-bold text-sm text-slate-900">${escapeHtml(doc.name)}</p>
-            <p class="text-xs text-slate-500 mt-1">${formatBytes(doc.sizeBytes)}</p>
+            <span class="px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 font-extrabold text-sm">#${doc.serialNo} &bull; ${doc.ext}</span>
+            <p class="mt-3 font-bold text-slate-800">${escapeHtml(doc.name)}</p>
+            <p class="text-xs text-slate-500 mt-1">${doc.size}</p>
           </div>
         `;
       }
 
-      const modal = document.getElementById('previewModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      document.getElementById('preview-modal').classList.remove('hidden');
     }
 
     function closePreviewModal() {
-      const modal = document.getElementById('previewModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      document.getElementById('previewModalBody').innerHTML = '';
-    }
-
-    // =========================================================
-    // HELPERS
-    // =========================================================
-    function formatBytes(bytes) {
-      if (!bytes || bytes === 0) return '0 B';
-      const k = 1024;
-      const sizes = ['B', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+      document.getElementById('preview-modal').classList.add('hidden');
+      document.getElementById('preview-modal-body').innerHTML = '';
     }
 
     function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+      return String(str).replace(/[&<>"']/g, match => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[match]));
     }
+
+    // Initialize saved versions badge on load
+    updateSavedVersionsBadge();
   </script>
 </body>
 </html>
